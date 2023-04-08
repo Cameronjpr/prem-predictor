@@ -36,7 +36,7 @@ export default function VoteCard(props: { fixture: RawFixture }) {
     }
   }
 
-  function handleActivate(e: MouseEvent) {
+  function handleActivate(e: React.MouseEvent) {
     setCardActive(true)
     setOriginX(e.clientX)
   }
@@ -56,7 +56,7 @@ export default function VoteCard(props: { fixture: RawFixture }) {
     setDeltaX(0)
   }
 
-  function handleTouchActivate(e: TouchEvent) {
+  function handleTouchActivate(e: React.TouchEvent) {
     setCardActive(true)
     setOriginX(e.touches[0].clientX)
   }
@@ -68,9 +68,9 @@ export default function VoteCard(props: { fixture: RawFixture }) {
       onTouchMove={(e) =>
         cardActive && setDeltaX(e.touches[0].clientX - originX)
       }
-      onTouchEnd={(e) => handleDeactivate(e)}
+      onTouchEnd={() => handleDeactivate()}
       onMouseDown={(e) => handleActivate(e)}
-      onMouseUp={(e) => handleDeactivate(e)}
+      onMouseUp={() => handleDeactivate()}
       onMouseMove={(e) => cardActive && setDeltaX(e.clientX - originX)}
       style={{
         transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px) scale(${
