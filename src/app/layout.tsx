@@ -1,3 +1,4 @@
+import { ClerkProvider, auth } from '@clerk/nextjs/app-beta'
 import './globals.css'
 
 export const metadata = {
@@ -12,15 +13,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-slate-500">
-        <header>
-          <nav className="flex flex-row gap-4 p-4 bg-slate-200">
-            <a href="/">Home</a>
-            <a href="/play">Play</a>
-          </nav>
-        </header>
-        {children}
-      </body>
+      <ClerkProvider>
+        <body className="bg-slate-500 mx-auto">
+          <header>
+            <nav className="flex flex-row gap-4 p-4 border-b-2">
+              <a href="/">Home</a>
+              <a href="/play">Play</a>
+              <a href="/sign-up">sign-up</a>
+              <a href="/sign-in">sign-in</a>
+            </nav>
+          </header>
+          {children}
+        </body>
+      </ClerkProvider>
     </html>
   )
 }

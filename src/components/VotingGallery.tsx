@@ -1,11 +1,17 @@
 'use client'
 
+import dayjs from 'dayjs'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@clerk/nextjs'
+
 import { teams } from 'src/lib/teams'
 import { RawFixture } from 'src/lib/types'
 
 export default function VotingGallery(props: { fixture: RawFixture }) {
   const { fixture } = props
+  dayjs().format()
+  dayjs.extend(advancedFormat)
 
   let homeTeam = teams[fixture.team_h - 1].shortName
   let awayTeam = teams[fixture.team_a - 1].shortName
@@ -18,6 +24,8 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
   let probableVoteTeam = probableVote !== null ? teams[probableVote - 1] : null
 
   console.log(probableVote)
+  const { isLoaded, userId, sessionId, getToken } = useAuth()
+  console.log(isLoaded, userId, sessionId, getToken)
 
   useEffect(() => {
     if (deltaX < 0) {
@@ -89,7 +97,9 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
           transition: cardActive ? 'none' : 'transform 0.3s ease',
         }}
       >
-        <time className="p-4">{fixture.kickoff_time}</time>
+        <time className="p-4 text-slate-600 ">
+          {dayjs(fixture.kickoff_time).format('dddd Do MMMM, h:mma')}
+        </time>
         <section className="flex flex-grow flex-row text-lg">
           <div className="flex-grow">
             <h2>{homeTeam}</h2>

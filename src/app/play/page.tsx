@@ -1,4 +1,4 @@
-import VotingGallery from 'src/components/VoteCard'
+import VotingGallery from 'src/components/VotingGallery'
 import { getThisWeeksGames } from 'src/lib/utils'
 
 export default async function PlayPage() {
