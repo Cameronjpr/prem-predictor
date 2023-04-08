@@ -5,3 +5,7 @@
 h1 {
   @apply text-4xl;
 }
+
+html, body {
+  overscroll-behavior-x: none;
+}

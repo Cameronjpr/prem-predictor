@@ -1,4 +1,4 @@
-import VoteCard from 'src/components/VoteCard'
+import VotingGallery from 'src/components/VoteCard'
 import { getThisWeeksGames } from 'src/lib/utils'
 
 export default async function PlayPage() {
@@ -17,9 +17,7 @@ export default async function PlayPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 gap-4">
-      <h1>Play</h1>
-
-      <VoteCard key={currentFixture.code} fixture={currentFixture} />
+      <VotingGallery key={currentFixture.code} fixture={currentFixture} />
     </main>
   )
 }

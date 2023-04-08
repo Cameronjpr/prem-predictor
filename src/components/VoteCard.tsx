@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { teams } from 'src/lib/teams'
 import { RawFixture } from 'src/lib/types'
 
-export default function VoteCard(props: { fixture: RawFixture }) {
+export default function VotingGallery(props: { fixture: RawFixture }) {
   const { fixture } = props
 
   let homeTeam = teams[fixture.team_h - 1].shortName
@@ -62,40 +62,43 @@ export default function VoteCard(props: { fixture: RawFixture }) {
   }
 
   return (
-    <article
-      className="w-72 border-2 z-10 text-center h-96 bg-slate-100 shadow-xl rounded-lg p-8 flex flex-col justify-between align-middle select-none transform-gpu"
-      onTouchStart={(e) => handleTouchActivate(e)}
-      onTouchMove={(e) =>
-        cardActive && setDeltaX(e.touches[0].clientX - originX)
-      }
-      onTouchEnd={() => handleDeactivate()}
-      onMouseDown={(e) => handleActivate(e)}
-      onMouseUp={() => handleDeactivate()}
-      onMouseMove={(e) => cardActive && setDeltaX(e.clientX - originX)}
-      style={{
-        transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px) scale(${
-          cardActive ? 1.02 : 1
-        })`,
-        borderColor: probableVoteTeam?.primaryColor,
-        transition: cardActive ? 'none' : 'transform 0.3s ease',
-      }}
-    >
-      <time>12:30pm</time>
-      <section className="flex flex-row gap-4 justify-between text-lg">
-        <div>
-          <h2>{homeTeam}</h2>
-        </div>
-        <div>
-          <h2>{awayTeam}</h2>
-        </div>
-      </section>
-      <div className="vote-summary">
+    <div className="flex flex-col align-middle">
+      <h1 className={`mb-8 text-center`}>
         {probableVote ? (
           <span className="">Voting {probableVoteTeam?.shortName}</span>
         ) : (
           <span className="animate-pulse">Swipe to vote!</span>
         )}
-      </div>
-    </article>
+      </h1>
+
+      <article
+        className="w-72 border-2 z-10 text-center h-96 bg-slate-100 shadow-xl rounded-lg flex flex-col justify-between align-middle select-none transform-gpu"
+        onTouchStart={(e) => handleTouchActivate(e)}
+        onTouchMove={(e) =>
+          cardActive && setDeltaX(e.touches[0].clientX - originX)
+        }
+        onTouchEnd={() => handleDeactivate()}
+        onMouseDown={(e) => handleActivate(e)}
+        onMouseUp={() => handleDeactivate()}
+        onMouseMove={(e) => cardActive && setDeltaX(e.clientX - originX)}
+        style={{
+          transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px) scale(${
+            cardActive ? 1.02 : 1
+          })`,
+          borderColor: probableVoteTeam?.primaryColor,
+          transition: cardActive ? 'none' : 'transform 0.3s ease',
+        }}
+      >
+        <time className="p-4">{fixture.kickoff_time}</time>
+        <section className="flex flex-grow flex-row text-lg">
+          <div className="flex-grow">
+            <h2>{homeTeam}</h2>
+          </div>
+          <div className="flex-grow">
+            <h2>{awayTeam}</h2>
+          </div>
+        </section>
+      </article>
+    </div>
   )
 }
