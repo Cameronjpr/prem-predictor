@@ -12,7 +12,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-slate-500">
+        <header>
+          <nav className="flex flex-row gap-4 p-4 bg-slate-200">
+            <a href="/">Home</a>
+            <a href="/play">Play</a>
+          </nav>
+        </header>
+        {children}
+      </body>
     </html>
   )
 }
