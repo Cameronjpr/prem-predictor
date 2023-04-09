@@ -1,4 +1,6 @@
 import { ClerkProvider, UserButton, auth } from '@clerk/nextjs/app-beta'
+import { Analytics } from '@vercel/analytics/react'
+
 import './globals.css'
 import Link from 'next/link'
 
@@ -32,6 +34,7 @@ export default function RootLayout({
             </nav>
           </header>
           {children}
+          <Analytics />
         </body>
       </ClerkProvider>
     </html>
