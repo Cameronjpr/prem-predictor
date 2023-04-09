@@ -10,8 +10,6 @@ export async function GET(
   const { fixture, team } = params
   const { userId } = auth()
 
-  console.log(userId, fixture, team)
-
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }

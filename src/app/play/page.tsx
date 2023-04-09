@@ -11,11 +11,10 @@ export default async function PlayPage() {
   const data = await res.json()
 
   const thisWeeksFixtures = getThisWeeksGames(data)
-  const currentFixture = thisWeeksFixtures[0]
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 gap-4">
-      <VotingGallery key={currentFixture.code} fixture={currentFixture} />
+    <main className="flex min-h-screen flex-col items-center p-8 gap-4">
+      <VotingGallery fixtures={thisWeeksFixtures} />
     </main>
   )
 }

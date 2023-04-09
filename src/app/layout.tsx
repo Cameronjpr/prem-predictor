@@ -1,5 +1,6 @@
 import { ClerkProvider, UserButton, auth } from '@clerk/nextjs/app-beta'
 import './globals.css'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Create Next App',
@@ -18,15 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
-        <body className="bg-slate-100 mx-auto">
+        <body className="bg-slate-100 mx-auto overscroll-x-none	">
           <header>
-            <nav className="w-full flex flex-row p-4 border-b-2 justify-between h-16 ">
+            <nav className="w-full flex flex-row p-4 border-b-2 bg-amber-300 justify-between h-16 ">
               <div className="flex flex-row gap-4 align-middle">
-                <a href="/">Home</a>
-                <a href="/play">Play</a>
+                <Link href="/">Home</Link>
+                <Link href="/play">Play</Link>
               </div>
               <div className="justify-self-end">
-                {userId ? <UserButton /> : <a href="/sign-in">Sign in</a>}
+                {userId ? <UserButton /> : <Link href="/sign-in">Sign in</Link>}
               </div>
             </nav>
           </header>
