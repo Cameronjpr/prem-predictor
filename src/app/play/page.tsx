@@ -10,8 +10,6 @@ export default async function PlayPage() {
 
   const data = await res.json()
 
-  console.log(data)
-
   const thisWeeksFixtures = getThisWeeksGames(data)
   const currentFixture = thisWeeksFixtures[0]
 

@@ -7,9 +7,11 @@ import { useAuth } from '@clerk/nextjs'
 
 import { teams } from 'src/lib/teams'
 import { RawFixture } from 'src/lib/types'
+import { useRouter } from 'next/navigation'
 
 export default function VotingGallery(props: { fixture: RawFixture }) {
   const { fixture } = props
+  const router = useRouter()
   dayjs().format()
   dayjs.extend(advancedFormat)
 
@@ -25,6 +27,26 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
 
   const { isLoaded, userId, sessionId, getToken } = useAuth()
 
+  const [votes, setVotes] = useState({ homeVotes: 0, awayVotes: 0 })
+
+  useEffect(() => {
+    async function getVotes() {
+      const homeVotesRes = await fetch(
+        `/api/vote/${fixture.id}/${fixture.team_h}`
+      )
+      const awayVotesRes = await fetch(
+        `/api/vote/${fixture.id}/${fixture.team_a}`
+      )
+
+      const homeVotes = await homeVotesRes.json()
+      const awayVotes = await awayVotesRes.json()
+
+      setVotes({ homeVotes, awayVotes })
+    }
+
+    getVotes()
+  }, [fixture])
+
   useEffect(() => {
     if (deltaX < 0) {
       setProbableVote(fixture.team_h)
@@ -35,8 +57,18 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
     }
   }, [deltaX, fixture])
 
-  function handleVote() {
+  async function handleVote() {
     if (vote !== null) {
+      const res = await fetch('/api/vote', {
+        method: 'POST',
+        body: JSON.stringify({
+          fixture: fixture.id,
+          picked: vote,
+          count: 1,
+        }),
+      })
+
+      router.refresh()
     }
   }
 
@@ -76,7 +108,7 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
       </h1>
 
       <article
-        className="w-72 border-2 z-10 text-center h-96 bg-slate-100 shadow-xl rounded-lg flex flex-col justify-between align-middle select-none transform-gpu"
+        className="w-72 border-2 z-10 text-center h-96 bg-white shadow-xl rounded-lg flex flex-col justify-between align-middle select-none transform-gpu"
         onTouchStart={(e) => handleTouchActivate(e)}
         onTouchMove={(e) =>
           cardActive && setDeltaX(e.touches[0].clientX - originX)
@@ -99,9 +131,12 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
         <section className="flex flex-grow flex-row text-lg">
           <div className="flex-grow">
             <h2>{homeTeam}</h2>
+            <span>picked {votes?.homeVotes} times</span>
           </div>
+          <span className="text-slate-400">vs</span>
           <div className="flex-grow">
             <h2>{awayTeam}</h2>
+            <span>picked {votes?.awayVotes} times</span>
           </div>
         </section>
       </article>
