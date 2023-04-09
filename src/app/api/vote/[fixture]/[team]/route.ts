@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export async function GET(
   request: Request,
-  { params }: { params: { fixture: string; team: string } }
+  { params }: { params: { fixture: number; team: number } }
 ) {
   const { fixture, team } = params
   const { userId } = auth()
