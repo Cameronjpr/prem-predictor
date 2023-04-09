@@ -16,8 +16,10 @@ export async function GET(
 
   const voteCount = await prisma.vote.findMany({
     where: {
-      fixture: Number(fixture),
-      picked: Number(team),
+      AND: {
+        fixture: Number(fixture),
+        picked: Number(team),
+      },
     },
   })
 
