@@ -1,4 +1,4 @@
-import { ClerkProvider, auth } from '@clerk/nextjs/app-beta'
+import { ClerkProvider, UserButton, auth } from '@clerk/nextjs/app-beta'
 import './globals.css'
 
 export const metadata = {
@@ -11,16 +11,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const { userId } = auth()
+
   return (
     <html lang="en">
       <ClerkProvider>
         <body className="bg-slate-500 mx-auto">
           <header>
-            <nav className="flex flex-row gap-4 p-4 border-b-2">
-              <a href="/">Home</a>
-              <a href="/play">Play</a>
-              <a href="/sign-up">sign-up</a>
-              <a href="/sign-in">sign-in</a>
+            <nav className="w-full flex flex-row p-4 border-b-2 justify-between">
+              <div className="flex flex-row gap-4 ">
+                <a href="/">Home</a>
+                <a href="/play">Play</a>
+              </div>
+              <div className="justify-self-end">
+                {userId ? <UserButton /> : <a href="/sign-in">Sign in</a>}
+              </div>
             </nav>
           </header>
           {children}

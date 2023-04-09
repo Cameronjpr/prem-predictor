@@ -23,9 +23,7 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
   const [deltaX, setDeltaX] = useState(0)
   let probableVoteTeam = probableVote !== null ? teams[probableVote - 1] : null
 
-  console.log(probableVote)
   const { isLoaded, userId, sessionId, getToken } = useAuth()
-  console.log(isLoaded, userId, sessionId, getToken)
 
   useEffect(() => {
     if (deltaX < 0) {
@@ -38,9 +36,7 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
   }, [deltaX, fixture])
 
   function handleVote() {
-    console.log('handle vote', vote)
     if (vote !== null) {
-      console.log('voted for', vote)
     }
   }
 
@@ -57,7 +53,7 @@ export default function VotingGallery(props: { fixture: RawFixture }) {
     } else if (deltaX > 100) {
       vote = fixture.team_a
     } else {
-      console.log('no vote')
+      vote = null
     }
 
     handleVote()
