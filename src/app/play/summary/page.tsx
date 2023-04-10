@@ -58,7 +58,7 @@ export default async function Page() {
           ]
         return (
           <div
-            key={vote.id}
+            key={vote.fixture}
             className="w-full flex flex-row text-center gap-2 justify-center"
           >
             <span
