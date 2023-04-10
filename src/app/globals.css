@@ -8,5 +8,6 @@ h1 {
 
 html, body {
   overscroll-behavior-x: none;
+  overflow-x: hidden;
   @apply text-slate-900;
 }
