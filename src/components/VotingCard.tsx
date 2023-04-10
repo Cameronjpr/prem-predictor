@@ -5,14 +5,12 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { teams } from 'src/lib/teams'
-import { RawFixture, Team } from 'src/lib/types'
+import { RawFixture } from 'src/lib/types'
 
 type VotingCardProps = {
   currentFixture: RawFixture
   currentFixtureIndex: number
   children: React.ReactNode
-  // setCurrentFixtureIndex: (index: number) => void
-  // setProbableVote: (vote: number | null) => void
 }
 
 export default function VotingCard(props: VotingCardProps) {
@@ -26,6 +24,7 @@ export default function VotingCard(props: VotingCardProps) {
   const [originX, setOriginX] = useState(0)
   const [deltaX, setDeltaX] = useState(0)
   const [probableVote, setProbableVote] = useState<number | null>(null)
+  const [voteLoading, setVoteLoading] = useState(false)
 
   let homeTeam = teams[currentFixture.team_h - 1].shortName
   let awayTeam = teams[currentFixture.team_a - 1].shortName
@@ -41,18 +40,18 @@ export default function VotingCard(props: VotingCardProps) {
   }, [deltaX, currentFixture])
 
   async function handleVote(team: number) {
+    setVoteLoading(true)
     const res = await fetch('/api/votes', {
       method: 'POST',
       body: JSON.stringify({
-        fixture: currentFixture.id,
+        fixture: currentFixture.code,
         picked: team,
-        count: 1,
       }),
     })
 
-    if (res.status === 200) {
-      // setCurrentFixtureIndex(currentFixtureIndex + 1)
+    if (res.ok) {
       console.log('Voted for ' + team)
+      router.push('/play?fixture=' + (Number(currentFixtureIndex) + 1))
     }
   }
 
@@ -96,6 +95,12 @@ export default function VotingCard(props: VotingCardProps) {
           cardActive ? 1.02 : 1
         })`,
         transition: cardActive ? 'none' : 'transform 0.3s ease',
+        borderColor:
+          probableVote === currentFixture.team_h
+            ? teams[currentFixture.team_h - 1].primaryColor
+            : probableVote === currentFixture.team_a
+            ? teams[currentFixture.team_a - 1].primaryColor
+            : 'white',
       }}
     >
       <time className="p-4 text-slate-600 ">

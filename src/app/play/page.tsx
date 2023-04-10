@@ -1,11 +1,14 @@
 import VotingGallery from 'src/components/VotingGallery'
-import { getThisWeeksGames } from 'src/lib/utils'
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: URLSearchParams
+}) {
   return (
-    <main className="flex min-h-screen flex-col items-center p-8 gap-4">
+    <main className="flex flex-col items-center p-8 gap-4">
       {/* @ts-expect-error Server Component */}
-      <VotingGallery />
+      <VotingGallery currentFixtureIndex={searchParams?.fixture ?? 0} />
     </main>
   )
 }

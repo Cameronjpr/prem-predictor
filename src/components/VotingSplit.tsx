@@ -11,7 +11,7 @@ async function getVotes(fixture: RawFixture) {
   const prisma = new PrismaClient()
   const votes = await prisma.vote.findMany({
     where: {
-      fixture: fixture.id, // should be fixture.code
+      fixture: fixture.code,
     },
   })
 
@@ -19,7 +19,7 @@ async function getVotes(fixture: RawFixture) {
     (acc, vote) => {
       return {
         ...acc,
-        [vote.picked]: acc[vote.picked] + vote.count,
+        [vote.picked]: acc[vote.picked] + 1,
       }
     },
     { [fixture.team_h]: 0, [fixture.team_a]: 0 }
@@ -33,6 +33,8 @@ export default async function VotingSplit(props: VotingSplitProps) {
 
   const votes = await getVotes(currentFixture)
 
+  console.log(votes)
+
   const totalVotes = votes[currentFixture.team_h] + votes[currentFixture.team_a]
   const homePercentage = Math.round(
     (votes[currentFixture.team_h] / totalVotes) * 100
@@ -44,29 +46,35 @@ export default async function VotingSplit(props: VotingSplitProps) {
   const homeColor = teams[currentFixture.team_h - 1].primaryColor
   const awayColor = teams[currentFixture.team_a - 1].primaryColor
 
+  if (totalVotes === 0) return null
+
   return (
     <section className="flex flex-col text-lg gap-2">
       <h2>Prediction split</h2>
-      <div className="flex flex-row justify-between gap-0.5 text-xl">
-        <div
-          className="p-2 overflow-hidden rounded-l-md"
-          style={{
-            backgroundColor: `${homeColor}`,
-            width: `${homePercentage ?? 50}%`,
-          }}
-        >
-          <span className="invert">{homePercentage}%</span>
-        </div>
+      <div className="flex flex-row justify-between gap-0.5 text-xl rounded-md overflow-hidden">
+        {homePercentage !== 0 ? (
+          <div
+            className="p-2 overflow-hidden"
+            style={{
+              backgroundColor: `${homeColor}`,
+              width: `${homePercentage ?? 50}%`,
+            }}
+          >
+            <span className="invert">{homePercentage}%</span>
+          </div>
+        ) : null}
 
-        <div
-          className="p-2 overflow-hidden rounded-r-md"
-          style={{
-            backgroundColor: `${awayColor}`,
-            width: `${awayPercentage ?? 50}%`,
-          }}
-        >
-          <span className="invert">{awayPercentage}%</span>
-        </div>
+        {awayPercentage !== 0 ? (
+          <div
+            className="p-2 overflow-hidden"
+            style={{
+              backgroundColor: `${awayColor}`,
+              width: `${awayPercentage ?? 50}%`,
+            }}
+          >
+            <span className="invert">{awayPercentage}%</span>
+          </div>
+        ) : null}
       </div>
     </section>
   )

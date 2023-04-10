@@ -12,11 +12,24 @@ datasource db {
 }
 
 model Vote {
-  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  playerId  String
-  fixture   Int
-  picked    Int
-  count     Int
+
+  player   Player @relation(fields: [playerId], references: [uuid])
+  playerId String
+
+  fixture Int
+  picked  Int
+
+  @@id([playerId, fixture])
+  @@unique([playerId, fixture], name: "playerFixtureUnique")
+  @@index([playerId])
+}
+
+model Player {
+  uuid      String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  username  String
+  votes     Vote[]
 }
