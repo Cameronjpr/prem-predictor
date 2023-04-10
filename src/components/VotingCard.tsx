@@ -81,7 +81,9 @@ export default function VotingCard(props: VotingCardProps) {
 
   return (
     <article
-      className="w-full md:w-80 h-96 border-2 z-10 text-center  bg-white shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu"
+      className={`w-full md:w-80 h-96 border-2 z-10 text-center  bg-white shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu ${
+        voteLoading ? 'scale-75 opacity-50' : ''
+      }`}
       onTouchStart={(e) => handleTouchActivate(e)}
       onTouchMove={(e) =>
         cardActive && setDeltaX(e.touches[0].clientX - originX)
@@ -92,7 +94,7 @@ export default function VotingCard(props: VotingCardProps) {
       onMouseMove={(e) => cardActive && setDeltaX(e.clientX - originX)}
       style={{
         transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px) scale(${
-          cardActive ? 1.02 : 1
+          voteLoading ? 0.95 : cardActive ? 1.02 : 1
         })`,
         transition: cardActive ? 'none' : 'transform 0.3s ease',
         borderColor:
