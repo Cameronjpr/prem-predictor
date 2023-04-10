@@ -14,15 +14,14 @@ datasource db {
 model Vote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  player    Player   @relation(fields: [playerId], references: [uuid])
+  playerId  String
+  fixture   Fixture  @relation(fields: [fixtureId], references: [id])
+  fixtureId Int
+  picked    Int
 
-  player   Player @relation(fields: [playerId], references: [uuid])
-  playerId String
-
-  fixture Int
-  picked  Int
-
-  @@id([playerId, fixture])
-  @@unique([playerId, fixture], name: "playerFixtureUnique")
+  @@id([playerId, fixtureId])
+  @@unique([playerId, fixtureId], name: "playerFixtureUnique")
   @@index([playerId])
 }
 
@@ -32,4 +31,17 @@ model Player {
   updatedAt DateTime @updatedAt
   username  String
   votes     Vote[]
+}
+
+model Fixture {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  home        Int
+  away        Int
+  kickoffTime DateTime
+  votes       Vote[]
+
+  @@unique([home, away], name: "homeAwayUnique")
+  @@index([home, away], name: "homeAwayIndex")
 }

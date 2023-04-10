@@ -3,9 +3,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const publicPaths = ['/', '/sign-in*', '/sign-up*']
+const adminPaths = ['/admin*']
 
 const isPublic = (path: string) => {
   return publicPaths.find((x) =>
+    path.match(new RegExp(`^${x}$`.replace('*$', '($|/)')))
+  )
+}
+
+const isAdmin = (path: string) => {
+  return adminPaths.find((x) =>
     path.match(new RegExp(`^${x}$`.replace('*$', '($|/)')))
   )
 }
@@ -24,6 +31,13 @@ export default withClerkMiddleware((request: NextRequest) => {
     signInUrl.searchParams.set('redirect_url', request.url)
     return NextResponse.redirect(signInUrl)
   }
+
+  if (isAdmin(request.nextUrl.pathname)) {
+    const { user } = getAuth(request)
+
+    // TODO: Replace this with own logic to check if the user is an admin
+  }
+
   return NextResponse.next()
 })
 

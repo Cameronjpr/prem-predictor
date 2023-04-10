@@ -32,18 +32,17 @@ export async function POST(request: Request) {
     where: {
       playerFixtureUnique: {
         playerId: userId,
-        fixture: fixture,
+        fixtureId: fixture,
       },
     },
   })
 
   if (existingVote !== null) {
-    console.log('existing vote', existingVote)
     const updatedVote = await prisma.vote.update({
       where: {
         playerFixtureUnique: {
           playerId: userId,
-          fixture: fixture,
+          fixtureId: fixture,
         },
       },
       data: {
@@ -54,12 +53,11 @@ export async function POST(request: Request) {
       status: 201,
     })
   } else {
-    console.log('new vote')
     const newVote = await prisma.vote.create({
       data: {
         playerId: userId,
         picked: picked,
-        fixture: fixture,
+        fixtureId: fixture,
       },
     })
 

@@ -1,17 +1,17 @@
-import type { RawFixture } from 'src/lib/types'
+import type { SlimFixture } from 'src/lib/types'
 import { useState, useEffect } from 'react'
-import { PrismaClient } from '@prisma/client'
+import { Fixture, PrismaClient } from '@prisma/client'
 import { teams } from 'src/lib/teams'
 
 type VotingSplitProps = {
-  currentFixture: RawFixture
+  currentFixture: SlimFixture
 }
 
-async function getVotes(fixture: RawFixture) {
+async function getVotes(fixture: SlimFixture) {
   const prisma = new PrismaClient()
   const votes = await prisma.vote.findMany({
     where: {
-      fixture: fixture.code,
+      fixtureId: fixture.id,
     },
   })
 
@@ -22,7 +22,7 @@ async function getVotes(fixture: RawFixture) {
         [vote.picked]: acc[vote.picked] + 1,
       }
     },
-    { [fixture.team_h]: 0, [fixture.team_a]: 0 }
+    { [fixture.home]: 0, [fixture.away]: 0 }
   )
 
   return grouped
@@ -35,16 +35,16 @@ export default async function VotingSplit(props: VotingSplitProps) {
 
   console.log(votes)
 
-  const totalVotes = votes[currentFixture.team_h] + votes[currentFixture.team_a]
+  const totalVotes = votes[currentFixture.home] + votes[currentFixture.away]
   const homePercentage = Math.round(
-    (votes[currentFixture.team_h] / totalVotes) * 100
+    (votes[currentFixture.home] / totalVotes) * 100
   )
   const awayPercentage = Math.round(
-    (votes[currentFixture.team_a] / totalVotes) * 100
+    (votes[currentFixture.away] / totalVotes) * 100
   )
 
-  const homeColor = teams[currentFixture.team_h - 1].primaryColor
-  const awayColor = teams[currentFixture.team_a - 1].primaryColor
+  const homeColor = teams[currentFixture.home - 1].primaryColor
+  const awayColor = teams[currentFixture.away - 1].primaryColor
 
   if (totalVotes === 0) return null
 

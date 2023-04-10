@@ -23,3 +23,20 @@ html, body {
 .y-scroll-lock {
   overflow-y: hidden;
 }
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+select {
+  @apply border border-slate-300 rounded-md;
+  @apply px-2 py-1; 
+}
+
+input {
+  @apply border border-slate-300 rounded-md;
+  @apply px-2 py-1; 
+}

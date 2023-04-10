@@ -1,3 +1,5 @@
+import { Fixture } from '@prisma/client'
+
 export type RawFixture = {
   code: number
   event: number
@@ -43,4 +45,8 @@ export type Selection = {
   gameweek: number
   selection: number
   selector: string
+}
+
+export type SlimFixture = Pick<Fixture, 'home' | 'away' | 'id'> & {
+  kickoffTime: string
 }

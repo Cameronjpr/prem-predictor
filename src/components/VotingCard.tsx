@@ -5,11 +5,12 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { teams } from 'src/lib/teams'
-import { RawFixture } from 'src/lib/types'
+import { RawFixture, SlimFixture } from 'src/lib/types'
 import Spinner from './Spinner'
+import { Fixture } from '@prisma/client'
 
 type VotingCardProps = {
-  currentFixture: RawFixture
+  currentFixture: SlimFixture
   currentFixtureIndex: number
   children: React.ReactNode
 }
@@ -27,14 +28,14 @@ export default function VotingCard(props: VotingCardProps) {
   const [probableVote, setProbableVote] = useState<number | null>(null)
   const [voteLoading, setVoteLoading] = useState(false)
 
-  let homeTeam = teams[currentFixture.team_h - 1].shortName
-  let awayTeam = teams[currentFixture.team_a - 1].shortName
+  let homeTeam = teams[currentFixture.home - 1].shortName
+  let awayTeam = teams[currentFixture.away - 1].shortName
 
   useEffect(() => {
     if (deltaX < 0) {
-      setProbableVote(currentFixture.team_h)
+      setProbableVote(currentFixture.home)
     } else if (deltaX > 0) {
-      setProbableVote(currentFixture.team_a)
+      setProbableVote(currentFixture.away)
     } else {
       setProbableVote(null)
     }
@@ -47,7 +48,7 @@ export default function VotingCard(props: VotingCardProps) {
     const res = await fetch('/api/votes', {
       method: 'POST',
       body: JSON.stringify({
-        fixture: currentFixture.code,
+        fixture: currentFixture.id,
         picked: team,
       }),
     })
@@ -67,11 +68,11 @@ export default function VotingCard(props: VotingCardProps) {
     setCardActive(false)
 
     if (deltaX < -100) {
-      handleVote(currentFixture.team_h)
+      handleVote(currentFixture.home)
     }
 
     if (deltaX > 100) {
-      handleVote(currentFixture.team_a)
+      handleVote(currentFixture.away)
     }
 
     setDeltaX(0)
@@ -84,7 +85,7 @@ export default function VotingCard(props: VotingCardProps) {
 
   return (
     <article
-      className={`w-full md:w-80 h-96 border-2 z-10 text-center  bg-white shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu`}
+      className={`w-full md:w-96 h-96 border-2 z-10 text-center  bg-white shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu`}
       onTouchStart={(e) => handleTouchActivate(e)}
       onTouchMove={(e) =>
         cardActive && setDeltaX(e.touches[0].clientX - originX)
@@ -99,10 +100,10 @@ export default function VotingCard(props: VotingCardProps) {
         })`,
         transition: cardActive ? 'none' : 'transform 0.3s ease',
         borderColor:
-          probableVote === currentFixture.team_h
-            ? teams[currentFixture.team_h - 1].primaryColor
-            : probableVote === currentFixture.team_a
-            ? teams[currentFixture.team_a - 1].primaryColor
+          probableVote === currentFixture.home
+            ? teams[currentFixture.home - 1].primaryColor
+            : probableVote === currentFixture.away
+            ? teams[currentFixture.away - 1].primaryColor
             : 'white',
       }}
     >
@@ -114,7 +115,7 @@ export default function VotingCard(props: VotingCardProps) {
       ) : (
         <>
           <time className="p-4 text-slate-600 ">
-            {dayjs(currentFixture.kickoff_time).format('dddd Do MMMM, h:mma')}
+            {dayjs(currentFixture.kickoffTime).format('dddd Do MMMM, h:mma')}
           </time>
           <section className="flex flex-grow flex-row text-lg">
             <div className="flex-grow">
