@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { getThisWeeksGames } from 'src/lib/utils'
 import Link from 'next/link'
 import VotingStepIndicator from './VotingStepIndicator'
+import Spinner from './Spinner'
 
 async function getFixtures() {
   const res = await fetch(`https://fantasy.premierleague.com/api/fixtures`, {
@@ -40,7 +41,9 @@ export default async function VotingGallery({
               currentFixtureIndex={currentFixtureIndex}
             >
               <Suspense
-                fallback={<section className="p-4 text-lg">Loading...</section>}
+                fallback={
+                  <section className="h-12 rounded-md bg-slate-200 flex flex-row justify-center text-lg animate-pulse"></section>
+                }
               >
                 {/* @ts-expect-error Server Component */}
                 <VotingSplit currentFixture={fixtures[currentFixtureIndex]} />

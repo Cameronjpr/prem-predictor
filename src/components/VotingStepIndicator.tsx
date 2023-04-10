@@ -15,7 +15,7 @@ export default function VotingStepIndicator({
         return (
           <div
             key={fixture.code}
-            className={`w-3 h-3 rounded-full ${
+            className={`w-3 h-3 rounded-full transition-all ${
               index == currentFixtureIndex
                 ? 'bg-amber-500'
                 : index <= currentFixtureIndex
