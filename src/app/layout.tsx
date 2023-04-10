@@ -24,8 +24,7 @@ export default function RootLayout({
         <body className="bg-slate-100 mx-auto overscroll-x-none	">
           <header>
             <nav className="w-full flex flex-row p-4 border-b-2 bg-amber-300 justify-between h-16 ">
-              <div className="flex flex-row gap-8 items-center text-amber-950 text-lg">
-                <Link href="/">Home</Link>
+              <div className="flex flex-row gap-4 items-center text-amber-950 text-md">
                 <Link href="/play">Play</Link>
                 <Link href="/leaderboard">Leaderboard</Link>
                 <Link href="/play/summary">Summary</Link>
