@@ -18,7 +18,7 @@ export async function GET(
     where: {
       AND: {
         fixture: Number(fixture),
-        picked: Number(team),
+        picked: Number(fixture),
       },
     },
   })

@@ -1,44 +1,50 @@
-'use client'
-
-import dayjs from 'dayjs'
-import advancedFormat from 'dayjs/plugin/advancedFormat'
-
-import { teams } from 'src/lib/teams'
-import { RawFixture } from 'src/lib/types'
 import VotingCard from './VotingCard'
-import { useState } from 'react'
+import VotingSplit from './VotingSplit'
+import { Suspense } from 'react'
+import { getThisWeeksGames } from 'src/lib/utils'
 
-export default function VotingGallery(props: { fixtures: Array<RawFixture> }) {
-  const { fixtures } = props
-  dayjs().format()
-  dayjs.extend(advancedFormat)
+async function getFixtures() {
+  const res = await fetch(`https://fantasy.premierleague.com/api/fixtures`, {
+    headers: {
+      'Access-Control-Allow-Origin': 'https://fantasy.premierleague.com',
+    },
+  })
 
-  const [currentFixtureIndex, setCurrentFixtureIndex] = useState(0)
+  const data = await res.json()
+  const fixtures = getThisWeeksGames(data)
 
-  const [probableVote, setProbableVote] = useState<number | null>(null)
-  let probableVoteTeam = probableVote !== null ? teams[probableVote - 1] : null
+  return fixtures
+}
+
+export default async function VotingGallery() {
+  const currentFixtureIndex = 0
+
+  const fixtures = await getFixtures()
+
+  // const [probableVote, setProbableVote] = useState<number | null>(null)
+  // let probableVoteTeam = probableVote !== null ? teams[probableVote - 1] : null
 
   return (
     <div className="w-full flex flex-col align-middle overscroll-x-none">
       {currentFixtureIndex < fixtures?.length ? (
         <>
-          <div className="h-28">
-            <h1 className={`mb-8 text-center`}>
-              {probableVote ? (
-                <span className="">
-                  Selecting {probableVoteTeam?.shortName}...
-                </span>
-              ) : (
-                <span className="animate-pulse">Swipe to predict!</span>
-              )}
-            </h1>
-          </div>
-          <VotingCard
-            currentFixture={fixtures[currentFixtureIndex]}
-            currentFixtureIndex={currentFixtureIndex}
-            setCurrentFixtureIndex={setCurrentFixtureIndex}
-            setProbableVote={setProbableVote}
-          />
+          <Suspense
+            fallback={
+              <article className="w-full md:w-80 h-96 border-2 z-10 text-center  bg-slate-900 shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu"></article>
+            }
+          >
+            <VotingCard
+              currentFixture={fixtures[currentFixtureIndex]}
+              currentFixtureIndex={currentFixtureIndex}
+            >
+              <Suspense
+                fallback={<section className="p-4 text-lg">Loading...</section>}
+              >
+                {/* @ts-expect-error Server Component */}
+                <VotingSplit currentFixture={fixtures[currentFixtureIndex]} />
+              </Suspense>
+            </VotingCard>
+          </Suspense>
 
           <footer className="w-full text-center pt-8 text-slate-600">
             {currentFixtureIndex + 1} of {fixtures.length}

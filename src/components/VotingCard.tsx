@@ -3,25 +3,20 @@
 import dayjs from 'dayjs'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { teams } from 'src/lib/teams'
 import { RawFixture, Team } from 'src/lib/types'
 
 type VotingCardProps = {
   currentFixture: RawFixture
   currentFixtureIndex: number
-
-  setCurrentFixtureIndex: (index: number) => void
-  setProbableVote: (vote: number | null) => void
+  children: React.ReactNode
+  // setCurrentFixtureIndex: (index: number) => void
+  // setProbableVote: (vote: number | null) => void
 }
 
 export default function VotingCard(props: VotingCardProps) {
-  const {
-    currentFixture,
-    currentFixtureIndex,
-    setCurrentFixtureIndex,
-    setProbableVote,
-  } = props
+  const { currentFixture, currentFixtureIndex, children } = props
 
   const router = useRouter()
   dayjs().format()
@@ -29,8 +24,8 @@ export default function VotingCard(props: VotingCardProps) {
 
   const [cardActive, setCardActive] = useState(false)
   const [originX, setOriginX] = useState(0)
-  let vote: number | null = null
   const [deltaX, setDeltaX] = useState(0)
+  const [probableVote, setProbableVote] = useState<number | null>(null)
 
   let homeTeam = teams[currentFixture.team_h - 1].shortName
   let awayTeam = teams[currentFixture.team_a - 1].shortName
@@ -43,12 +38,10 @@ export default function VotingCard(props: VotingCardProps) {
     } else {
       setProbableVote(null)
     }
-  }, [deltaX, currentFixture, setProbableVote])
-
-  console.log(currentFixture)
+  }, [deltaX, currentFixture])
 
   async function handleVote(team: number) {
-    const res = await fetch('/api/vote', {
+    const res = await fetch('/api/votes', {
       method: 'POST',
       body: JSON.stringify({
         fixture: currentFixture.id,
@@ -58,7 +51,8 @@ export default function VotingCard(props: VotingCardProps) {
     })
 
     if (res.status === 200) {
-      setCurrentFixtureIndex(currentFixtureIndex + 1)
+      // setCurrentFixtureIndex(currentFixtureIndex + 1)
+      console.log('Voted for ' + team)
     }
   }
 
@@ -117,88 +111,7 @@ export default function VotingCard(props: VotingCardProps) {
         </div>
       </section>
 
-      <VotingSplit
-        currentFixture={currentFixture}
-        homeColor={teams[currentFixture.team_h - 1].primaryColor}
-        awayColor={teams[currentFixture.team_a - 1].primaryColor}
-      />
+      {children}
     </article>
   )
-}
-
-type VotingSplitProps = {
-  currentFixture: RawFixture
-  homeColor: string
-  awayColor: string
-}
-
-function VotingSplit(props: VotingSplitProps) {
-  const { currentFixture, homeColor, awayColor } = props
-
-  const [homePercentage, setHomePercentage] = useState<number | null>(null)
-  const [awayPercentage, setAwayPercentage] = useState<number | null>(null)
-
-  useEffect(() => {
-    getVotes(
-      currentFixture.id,
-      currentFixture.team_h,
-      currentFixture.team_a
-    ).then((data) => {
-      console.log(data)
-      setHomePercentage(data.homePercentage)
-      setAwayPercentage(data.awayPercentage)
-    })
-  }, [currentFixture])
-
-  return (
-    <section className="flex flex-col text-lg gap-2">
-      <h2>Prediction split</h2>
-      <div className="flex flex-row justify-between gap-0.5 text-xl">
-        <div
-          className="p-2 overflow-hidden rounded-l-md"
-          style={{
-            backgroundColor: `${homeColor}`,
-            width: `${homePercentage ?? 50}%`,
-          }}
-        >
-          <span className="invert">{homePercentage}%</span>
-        </div>
-
-        <div
-          className="p-2 overflow-hidden rounded-r-md"
-          style={{
-            backgroundColor: `${awayColor}`,
-            width: `${awayPercentage ?? 50}%`,
-          }}
-        >
-          <span className="invert">{awayPercentage}%</span>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-async function getVotes(
-  fixtureId: number,
-  homeTeam: number,
-  awayTeam: number
-): Promise<{
-  homePercentage: number
-  awayPercentage: number
-}> {
-  const homeVotes = await fetch(`/api/vote/${fixtureId}/${homeTeam}`)
-  const awayVotes = await fetch(`/api/vote/${fixtureId}/${awayTeam}`)
-
-  const homeData = await homeVotes.json()
-  const awayData = await awayVotes.json()
-
-  const totalVotes = homeData + awayData
-
-  const homePercentage = Math.round((homeData / totalVotes) * 100)
-  const awayPercentage = Math.round((awayData / totalVotes) * 100)
-
-  return {
-    homePercentage,
-    awayPercentage,
-  }
 }
