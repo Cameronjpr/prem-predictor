@@ -39,7 +39,7 @@ export default async function Page() {
   const fixtures = await getFixtures()
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-8 p-24">
+    <main className="flex min-h-screen flex-col items-center gap-6 py-4">
       <h1>Your summary</h1>
       {votes.map((vote) => {
         const fixture = fixtures.find((f) => f.code === vote.fixture)
@@ -48,8 +48,8 @@ export default async function Page() {
           return null
         }
 
-        const home = teams[fixture.team_h]
-        const away = teams[fixture.team_a]
+        const home = teams[fixture.team_h - 1]
+        const away = teams[fixture.team_a - 1]
 
         const team = teams[vote.picked]
         const opponent =
@@ -68,7 +68,7 @@ export default async function Page() {
                 fontWeight: fixture.team_h === vote.picked ? 'bold' : '',
               }}
             >
-              {home?.name}
+              {home?.shortName}
             </span>
             <span>vs</span>
             <span
@@ -78,7 +78,7 @@ export default async function Page() {
                 fontWeight: fixture.team_a === vote.picked ? 'bold' : '',
               }}
             >
-              {away?.name}
+              {away?.shortName}
             </span>
           </div>
         )

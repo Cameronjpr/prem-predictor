@@ -34,7 +34,7 @@ export default function RootLayout({
               </div>
             </nav>
           </header>
-          {children}
+          <main className="p-4">{children}</main>
           <Analytics />
         </body>
       </ClerkProvider>

@@ -3,11 +3,23 @@
 @tailwind utilities;
 
 h1 {
-  @apply text-4xl;
+  @apply text-3xl;
+}
+
+h2 {
+  @apply text-2xl;
+}
+
+h3 {
+  @apply text-xl;
 }
 
 html, body {
   overscroll-behavior-x: none;
   overflow-x: hidden;
   @apply text-slate-900;
+}
+
+.y-scroll-lock {
+  overflow-y: hidden;
 }
