@@ -36,15 +36,12 @@ export default async function VotingSplit(props: VotingSplitProps) {
   console.log(votes)
 
   const totalVotes = votes[currentFixture.team_h] + votes[currentFixture.team_a]
-  // const homePercentage = Math.round(
-  //   (votes[currentFixture.team_h] / totalVotes) * 100
-  // )
-  // const awayPercentage = Math.round(
-  //   (votes[currentFixture.team_a] / totalVotes) * 100
-  // )
-
-  const homePercentage = 43
-  const awayPercentage = 57
+  const homePercentage = Math.round(
+    (votes[currentFixture.team_h] / totalVotes) * 100
+  )
+  const awayPercentage = Math.round(
+    (votes[currentFixture.team_a] / totalVotes) * 100
+  )
 
   const homeColor = teams[currentFixture.team_h - 1].primaryColor
   const awayColor = teams[currentFixture.team_a - 1].primaryColor
