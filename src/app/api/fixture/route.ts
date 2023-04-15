@@ -6,6 +6,7 @@ export async function POST(request: Request) {
   dayjs().format()
   const prisma = new PrismaClient()
   const { userId } = auth()
+  console.log(userId)
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -14,10 +15,11 @@ export async function POST(request: Request) {
   const res = await request.json()
 
   const {
+    code,
     homeTeam,
     awayTeam,
     kickoff,
-  }: { homeTeam: string; awayTeam: string; kickoff: string } = res
+  }: { code: string; homeTeam: string; awayTeam: string; kickoff: string } = res
 
   const existingFixture = await prisma.fixture.findUnique({
     where: {
@@ -34,6 +36,7 @@ export async function POST(request: Request) {
 
   const newFixture = await prisma.fixture.create({
     data: {
+      code: Number(code),
       home: Number(homeTeam),
       away: Number(awayTeam),
       kickoffTime: dayjs(kickoff).toDate(),

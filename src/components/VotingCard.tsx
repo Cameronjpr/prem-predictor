@@ -10,13 +10,13 @@ import Spinner from './Spinner'
 import { Fixture } from '@prisma/client'
 
 type VotingCardProps = {
-  currentFixture: SlimFixture
+  fixture: SlimFixture
   currentFixtureIndex: number
   children: React.ReactNode
 }
 
 export default function VotingCard(props: VotingCardProps) {
-  const { currentFixture, currentFixtureIndex, children } = props
+  const { fixture, currentFixtureIndex, children } = props
 
   const router = useRouter()
   dayjs().format()
@@ -28,18 +28,18 @@ export default function VotingCard(props: VotingCardProps) {
   const [probableVote, setProbableVote] = useState<number | null>(null)
   const [voteLoading, setVoteLoading] = useState(false)
 
-  let homeTeam = teams[currentFixture.home - 1].shortName
-  let awayTeam = teams[currentFixture.away - 1].shortName
+  let homeTeam = teams[fixture.home - 1].shortName
+  let awayTeam = teams[fixture.away - 1].shortName
 
   useEffect(() => {
     if (deltaX < 0) {
-      setProbableVote(currentFixture.home)
+      setProbableVote(fixture.home)
     } else if (deltaX > 0) {
-      setProbableVote(currentFixture.away)
+      setProbableVote(fixture.away)
     } else {
       setProbableVote(null)
     }
-  }, [deltaX, currentFixture])
+  }, [deltaX, fixture])
 
   async function handleVote(team: number) {
     setVoteLoading(true)
@@ -48,7 +48,7 @@ export default function VotingCard(props: VotingCardProps) {
     const res = await fetch('/api/votes', {
       method: 'POST',
       body: JSON.stringify({
-        fixture: currentFixture.id,
+        fixture: fixture.id,
         picked: team,
       }),
     })
@@ -68,11 +68,11 @@ export default function VotingCard(props: VotingCardProps) {
     setCardActive(false)
 
     if (deltaX < -100) {
-      handleVote(currentFixture.home)
+      handleVote(fixture.home)
     }
 
     if (deltaX > 100) {
-      handleVote(currentFixture.away)
+      handleVote(fixture.away)
     }
 
     setDeltaX(0)
@@ -85,7 +85,7 @@ export default function VotingCard(props: VotingCardProps) {
 
   return (
     <article
-      className={`w-full md:w-96 h-96 border-2 z-10 text-center  bg-white shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu`}
+      className={`w-full md:w-96 h-96 border-2 z-10 text-center row-[1] col-[1] bg-white shadow-sm p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu`}
       onTouchStart={(e) => handleTouchActivate(e)}
       onTouchMove={(e) =>
         cardActive && setDeltaX(e.touches[0].clientX - originX)
@@ -95,28 +95,27 @@ export default function VotingCard(props: VotingCardProps) {
       onMouseUp={() => handleDeactivate()}
       onMouseMove={(e) => cardActive && setDeltaX(e.clientX - originX)}
       style={{
-        transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px) scale(${
-          voteLoading ? 0.95 : cardActive ? 1.02 : 1
-        })`,
+        transform: `rotate(${deltaX / 50}deg) translateX(${deltaX}px)`,
         transition: cardActive ? 'none' : 'transform 0.3s ease',
+        boxShadow: cardActive ? '0 0 0.5rem 0.5rem rgba(0, 0, 0, 0.1)' : 'none',
         borderColor:
-          probableVote === currentFixture.home
-            ? teams[currentFixture.home - 1].primaryColor
-            : probableVote === currentFixture.away
-            ? teams[currentFixture.away - 1].primaryColor
+          probableVote === fixture.home
+            ? teams[fixture.home - 1].primaryColor
+            : probableVote === fixture.away
+            ? teams[fixture.away - 1].primaryColor
             : 'white',
       }}
     >
       {voteLoading ? (
-        <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
-          <h2>Voting...</h2>
+        <div className="w-full h-full flex flex-col gap-4 justify-center items-center opacity-25">
           <Spinner />
         </div>
       ) : (
         <>
           <time className="p-4 text-slate-600 ">
-            {dayjs(currentFixture.kickoffTime).format('dddd Do MMMM, h:mma')}
+            {dayjs(fixture.kickoffTime).format('dddd Do MMMM, h:mma')}
           </time>
+
           <section className="flex flex-grow flex-row text-lg">
             <div className="flex-grow">
               <h3 className="font-semibold">{homeTeam}</h3>

@@ -1,8 +1,9 @@
 import { teams } from 'src/lib/teams'
-import { useForm } from 'react-hook-form'
 import { getThisWeeksExpectedGames } from 'src/lib/utils'
 import { RawFixture } from 'src/lib/types'
 import NewFixtureForm from 'src/components/NewFixtureForm'
+import prisma from 'src/lib/db'
+import NewFixtureRow from 'src/components/NewFixtureRow'
 
 async function getData() {
   const res = await fetch(`https://fantasy.premierleague.com/api/fixtures`, {
@@ -15,35 +16,32 @@ async function getData() {
 
   const fixtures = getThisWeeksExpectedGames(data as RawFixture[])
 
-  return fixtures
+  const existingFixtures = await prisma.fixture.findMany()
+
+  return {
+    fixtures,
+    existingFixtures: existingFixtures,
+  }
 }
 
 export default async function Page() {
-  const fixtures = await getData()
-
-  console.log(fixtures)
+  const { fixtures, existingFixtures } = await getData()
 
   return (
     <main className="flex flex-col items-center justify-center gap-4">
       <h1>Admin panel</h1>
 
       <h2>Predicted fixtures</h2>
+
       <section className="w-full flex flex-col items-left justify-between gap-2">
         {fixtures.map((fixture, idx) => {
-          const home = teams[fixture.team_h - 1]
-          const away = teams[fixture.team_a - 1]
-          const kickoffTime = new Date(fixture.kickoff_time)
+          if (existingFixtures.find((f) => f.code === fixture.code)) {
+            return null
+          }
 
-          return (
-            <div key={idx} className="grid grid-cols-3 justify-between">
-              <span>{home.shortName}</span>
-              <span>{away.shortName}</span>
-              <span>{kickoffTime.toLocaleString()}</span>
-            </div>
-          )
+          return <NewFixtureRow key={idx} fixture={fixture} />
         })}
       </section>
-      <NewFixtureForm />
     </main>
   )
 }

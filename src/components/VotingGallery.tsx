@@ -31,30 +31,41 @@ export default async function VotingGallery({
 }) {
   const fixtures = await getFixtures()
 
+  console.log(fixtures, currentFixtureIndex)
+
   return (
     <div className="w-full flex flex-col align-middle overscroll-x-none  ">
       {currentFixtureIndex < fixtures?.length ? (
         <>
           <h1 className="text-center py-6">Swipe to vote</h1>
-          <Suspense
-            fallback={
-              <article className=" w-full md:w-80 h-96 border-2 z-10 text-center  bg-slate-100 shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu"></article>
-            }
-          >
-            <VotingCard
-              currentFixture={fixtures[currentFixtureIndex]}
-              currentFixtureIndex={currentFixtureIndex}
-            >
-              <Suspense
-                fallback={
-                  <section className="h-12 rounded-md bg-slate-200 flex flex-row justify-center text-lg animate-pulse"></section>
-                }
-              >
-                {/* @ts-expect-error Server Component */}
-                <VotingSplit currentFixture={fixtures[currentFixtureIndex]} />
-              </Suspense>
-            </VotingCard>
-          </Suspense>
+          <div className="grid">
+            {fixtures
+              .filter((_, idx) => idx >= currentFixtureIndex)
+              .map((fixture, idx) => {
+                return (
+                  <Suspense
+                    key={idx}
+                    fallback={
+                      <article className=" w-full md:w-80 h-96 border-2 z-10 text-center  bg-slate-100 shadow-xl p-4 rounded-lg flex flex-col justify-between place-self-center align-middle select-none transform-gpu"></article>
+                    }
+                  >
+                    <VotingCard
+                      fixture={fixtures[idx]}
+                      currentFixtureIndex={currentFixtureIndex}
+                    >
+                      <Suspense
+                        fallback={
+                          <section className="h-12 rounded-md bg-slate-200 flex flex-row justify-center text-lg animate-pulse"></section>
+                        }
+                      >
+                        {/* @ts-expect-error Server Component */}
+                        <VotingSplit currentFixture={fixtures[idx]} />
+                      </Suspense>
+                    </VotingCard>
+                  </Suspense>
+                )
+              })}
+          </div>
 
           <footer className="w-full text-center pt-8 text-slate-600">
             <VotingStepIndicator
